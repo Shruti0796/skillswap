@@ -1,0 +1,48 @@
+{% extends "base_app.html" %}
+{% block title %}Schedule a Session &mdash; SkillSwap{% endblock %}
+{% block page_title %}Schedule session{% endblock %}
+{% block content %}
+<div class="form-card" style="max-width: 480px;">
+  <h2>Schedule with {{ other.name }}</h2>
+  <form method="POST">
+    <div class="field">
+      <label for="mentor_id">Who's teaching this session?</label>
+      <select id="mentor_id" name="mentor_id" required>
+        <option value="{{ current_user.id }}">Me &mdash; teaching {{ other.name }}</option>
+        <option value="{{ other.id }}">{{ other.name }} &mdash; teaching me</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="topic">Topic</label>
+      <input type="text" id="topic" name="topic" placeholder="e.g. Intro to Python functions" required>
+    </div>
+    <div class="field">
+      <label for="scheduled_at">Date &amp; time</label>
+      <input type="datetime-local" id="scheduled_at" name="scheduled_at" required>
+    </div>
+    <div class="field">
+      <label for="meeting_provider">How will you meet?</label>
+      <select id="meeting_provider" name="meeting_provider" onchange="toggleLinkField(this.value)">
+        <option value="jitsi">Video call &mdash; we'll generate a link (no account needed)</option>
+        <option value="zoom">Zoom &mdash; I'll paste my own link</option>
+        <option value="google_meet">Google Meet &mdash; I'll paste my own link</option>
+        <option value="in_person">In person &mdash; no link needed</option>
+        <option value="other">Other</option>
+      </select>
+    </div>
+    <div class="field" id="meeting_link_field">
+      <label for="meeting_link">Meeting link</label>
+      <input type="url" id="meeting_link" name="meeting_link" placeholder="https://zoom.us/j/...">
+      <div class="help-text">Only needed for Zoom, Google Meet, or Other.</div>
+    </div>
+    <button class="btn btn-primary btn-block" type="submit">Schedule</button>
+  </form>
+</div>
+<script>
+  function toggleLinkField(provider) {
+    var field = document.getElementById('meeting_link_field');
+    field.style.display = (provider === 'zoom' || provider === 'google_meet' || provider === 'other') ? 'block' : 'none';
+  }
+  toggleLinkField(document.getElementById('meeting_provider').value);
+</script>
+{% endblock %}

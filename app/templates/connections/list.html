@@ -1,0 +1,50 @@
+{% extends "base_app.html" %}
+{% block title %}Requests &mdash; SkillSwap{% endblock %}
+{% block page_title %}Requests{% endblock %}
+{% block content %}
+
+<h3>Received</h3>
+{% if not received %}
+<div class="empty-state">Nothing here yet &mdash; requests people send you will show up in this list.</div>
+{% endif %}
+{% for r in received %}
+<div class="card card-row">
+  <div>
+    <strong>{{ r.sender.name }}</strong>
+    <span class="status status-{{ r.status }}">{{ r.status }}</span>
+    <p class="small text-muted mb-0">{{ r.message or "No message." }}</p>
+  </div>
+  {% if r.status == 'pending' %}
+  <div class="flex gap-2">
+    <form method="POST" action="{{ url_for('connections.respond', request_id=r.id) }}">
+      <input type="hidden" name="action" value="accept">
+      <button class="btn btn-primary btn-sm">Accept</button>
+    </form>
+    <form method="POST" action="{{ url_for('connections.respond', request_id=r.id) }}">
+      <input type="hidden" name="action" value="reject">
+      <button class="btn btn-danger-outline btn-sm">Decline</button>
+    </form>
+  </div>
+  {% elif r.status == 'accepted' %}
+    <a href="{{ url_for('sessions.schedule', other_user_id=r.sender.id) }}" class="btn btn-primary btn-sm">Schedule session</a>
+  {% endif %}
+</div>
+{% endfor %}
+
+<h3 class="mt-5">Sent</h3>
+{% if not sent %}
+<div class="empty-state">You haven't sent any requests yet &mdash; <a href="{{ url_for('matches.list_matches') }}">browse your matches</a>.</div>
+{% endif %}
+{% for r in sent %}
+<div class="card card-row">
+  <div>
+    <strong>{{ r.receiver.name }}</strong>
+    <span class="status status-{{ r.status }}">{{ r.status }}</span>
+    <p class="small text-muted mb-0">{{ r.message or "No message." }}</p>
+  </div>
+  {% if r.status == 'accepted' %}
+    <a href="{{ url_for('sessions.schedule', other_user_id=r.receiver.id) }}" class="btn btn-primary btn-sm">Schedule session</a>
+  {% endif %}
+</div>
+{% endfor %}
+{% endblock %}

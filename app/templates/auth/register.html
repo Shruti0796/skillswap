@@ -1,0 +1,28 @@
+{% extends "base_public.html" %}
+{% block title %}Sign up &mdash; SkillSwap{% endblock %}
+{% block content %}
+<div class="form-card">
+  <h2>Create your account</h2>
+  <form method="POST">
+    <div class="field">
+      <label for="name">Name</label>
+      <input type="text" id="name" name="name" required>
+    </div>
+    <div class="field">
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" required>
+    </div>
+    <div class="field">
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" minlength="8" required data-password-toggle>
+      <div class="help-text">At least 8 characters.</div>
+    </div>
+    <div class="field">
+      <label for="confirm_password">Re-type password</label>
+      <input type="password" id="confirm_password" name="confirm_password" minlength="8" required data-password-toggle>
+    </div>
+    <button class="btn btn-primary btn-block" type="submit">Sign up</button>
+  </form>
+  <p class="small mt-5 mb-0">Already have an account? <a href="{{ url_for('auth.login') }}">Log in</a></p>
+</div>
+{% endblock %}

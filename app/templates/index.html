@@ -1,0 +1,88 @@
+{% extends "base_app.html" if current_user.is_authenticated else "base_public.html" %}
+{% block title %}{% if current_user.is_authenticated %}Dashboard{% else %}SkillSwap{% endif %}{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+ 
+{% block content %}
+{% if current_user.is_authenticated %}
+ 
+<p class="text-muted">Your top matches right now:</p>
+ 
+{% if top_matches %}
+<div class="grid">
+  {% for m in top_matches %}
+  <div class="match-card">
+    <div class="match-card-head">
+      <h4 class="mb-0">{{ m.user.name }}</h4>
+      <span class="match-score">{{ m.score | round | int }}% match</span>
+    </div>
+    {% if m.rating %}
+      <div class="match-rating">{{ m.rating }} rating &middot; {{ m.review_count }} review{{ 's' if m.review_count != 1 }}</div>
+    {% else %}
+      <div class="match-rating">No reviews yet</div>
+    {% endif %}
+    <div class="match-detail"><strong>Can teach you</strong>{{ m.they_can_teach_you | join(', ') or '—' }}</div>
+    <div class="match-detail"><strong>Wants to learn from you</strong>{{ m.you_can_teach_them | join(', ') or '—' }}</div>
+    <a href="{{ url_for('profile.view', user_id=m.user.id) }}" class="btn btn-outline btn-sm mt-5">View profile</a>
+  </div>
+  {% endfor %}
+</div>
+<p class="mt-5"><a href="{{ url_for('matches.list_matches') }}">See all matches &rarr;</a></p>
+{% else %}
+<div class="empty-state">
+  <strong>No matches yet.</strong><br>
+  <a href="{{ url_for('profile.edit') }}">Add some skills to your profile</a> to start getting matched.
+</div>
+{% endif %}
+ 
+{% else %}
+ 
+<section class="hero-section">
+  <div class="hero-grid">
+    <div class="public-hero">
+      <h1>Teach what you know.<br>Learn what you don't.</h1>
+      <p class="text-muted">Everyone has something to teach, and something they're hoping to learn. Find the person on the other side of that trade.</p>
+      <div class="public-hero-actions">
+        <a href="{{ url_for('auth.register') }}" class="btn btn-primary">Get started</a>
+        <a href="{{ url_for('auth.login') }}" class="btn btn-outline">Log in</a>
+      </div>
+    </div>
+ 
+    <!-- Loops through real example trades instead of a static mockup card -->
+    <div class="trade-panel" aria-hidden="true">
+      <div class="pair">
+        <span class="skill-chip">Python</span>
+        <svg class="swap-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+        <span class="skill-chip">Spanish</span>
+      </div>
+      <div class="pair">
+        <span class="skill-chip">Guitar</span>
+        <svg class="swap-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+        <span class="skill-chip">Excel</span>
+      </div>
+      <div class="pair">
+        <span class="skill-chip">Photography</span>
+        <svg class="swap-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+        <span class="skill-chip">French</span>
+      </div>
+      <div class="pair">
+        <span class="skill-chip">UI/UX Design</span>
+        <svg class="swap-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+        <span class="skill-chip">Public Speaking</span>
+      </div>
+    </div>
+  </div>
+</section>
+ 
+<section class="how-section">
+  <div class="how-inner">
+    <h2>How it works</h2>
+    <ol class="steps">
+      <li class="step"><span class="step-num">1</span><strong>List your skills.</strong><p class="small text-muted mb-0">What you can teach, and what you're hoping to learn.</p></li>
+      <li class="step"><span class="step-num">2</span><strong>Get matched.</strong><p class="small text-muted mb-0">We rank people by how well your skills complement theirs.</p></li>
+      <li class="step"><span class="step-num">3</span><strong>Meet and trade.</strong><p class="small text-muted mb-0">Send a request, schedule a video call, and leave a review.</p></li>
+    </ol>
+  </div>
+</section>
+ 
+{% endif %}
+{% endblock %}

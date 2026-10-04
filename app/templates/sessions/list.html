@@ -1,0 +1,77 @@
+{% extends "base_app.html" %}
+{% block title %}My Sessions &mdash; SkillSwap{% endblock %}
+{% block page_title %}Sessions{% endblock %}
+{% block content %}
+{% if not sessions %}
+<div class="empty-state">No sessions scheduled yet &mdash; <a href="{{ url_for('connections.list_requests') }}">accept a request</a> to schedule one.</div>
+{% endif %}
+
+{% for s in sessions %}
+<div class="card">
+  <div class="card-row">
+    <div>
+      <strong>{{ s.topic }}</strong>
+      <span class="status status-{{ s.status }}">{{ s.status }}</span>
+      <p class="small text-muted mb-0">
+        With {{ s.other_party(current_user.id).name }} &middot; {{ s.scheduled_at.strftime('%b %d, %Y %I:%M %p') }} &middot; mentor: {{ s.mentor.name }}
+      </p>
+    </div>
+    <div class="flex gap-2">
+      {% if s.meeting_link %}
+      <a href="{{ s.meeting_link }}" target="_blank" rel="noopener" class="btn btn-outline btn-sm join-link">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 8-6 4 6 4V8Z"/><rect x="2" y="6" width="14" height="12" rx="2"/></svg>
+        Join session
+      </a>
+      {% elif s.meeting_provider == 'in_person' %}
+      <span class="status" style="background:var(--surface-2); color:var(--ink-soft);">In person</span>
+      {% endif %}
+
+      {% if s.status == 'upcoming' %}
+      <form method="POST" action="{{ url_for('sessions.complete', session_id=s.id) }}">
+        <button class="btn btn-primary btn-sm">Mark completed</button>
+      </form>
+      <form method="POST" action="{{ url_for('sessions.cancel', session_id=s.id) }}">
+        <button class="btn btn-danger-outline btn-sm">Cancel</button>
+      </form>
+      {% elif s.status == 'completed' %}
+      <a href="{{ url_for('reviews.add_review', session_id=s.id) }}" class="btn btn-outline btn-sm">Leave review</a>
+      {% endif %}
+    </div>
+  </div>
+
+  <details class="materials-panel">
+    <summary>Notes &amp; recording {% if s.materials %}({{ s.materials | length }}){% endif %}</summary>
+
+    {% if s.materials %}
+    <ul class="materials-list">
+      {% for m in s.materials %}
+      <li>
+        {% if m.kind == 'notes' %}
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/></svg>
+        {% else %}
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 8-6 4 6 4V8Z"/><rect x="2" y="6" width="14" height="12" rx="2"/></svg>
+        {% endif %}
+        <a href="{{ m.url }}" target="_blank" rel="noopener">{{ m.title }}</a>
+        <span class="material-meta">&middot; added by {{ m.uploaded_by.name }} &middot; {{ m.created_at.strftime('%b %d, %Y') }}</span>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="small text-muted" style="margin-top: var(--sp-2);">Nothing added yet.</p>
+    {% endif %}
+
+    <form method="POST" action="{{ url_for('sessions.add_notes', session_id=s.id) }}" enctype="multipart/form-data" class="inline-form">
+      <input type="file" name="notes_file" accept=".pdf,.doc,.docx,.ppt,.pptx,.txt,.md" required style="max-width: 220px;">
+      <input type="text" name="title" placeholder="Title (optional)">
+      <button class="btn btn-outline btn-sm" type="submit">Upload notes</button>
+    </form>
+
+    <form method="POST" action="{{ url_for('sessions.add_recording', session_id=s.id) }}" class="inline-form">
+      <input type="url" name="recording_url" placeholder="Link to recording (YouTube, Drive...)" required>
+      <input type="text" name="title" placeholder="Title (optional)">
+      <button class="btn btn-outline btn-sm" type="submit">Add recording link</button>
+    </form>
+  </details>
+</div>
+{% endfor %}
+{% endblock %}

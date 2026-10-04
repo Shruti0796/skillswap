@@ -1,0 +1,14 @@
+{% extends "base_app.html" %}
+{% block title %}Notifications &mdash; SkillSwap{% endblock %}
+{% block page_title %}Notifications{% endblock %}
+{% block content %}
+{% if not notifications %}
+<div class="empty-state">Nothing yet &mdash; you'll see activity here when someone matches, connects, or reviews you.</div>
+{% endif %}
+{% for n in notifications %}
+<div class="card">
+  <a href="{{ n.link or '#' }}">{{ n.message }}</a>
+  <div class="small text-muted">{{ n.created_at.strftime('%b %d, %Y %I:%M %p') }}</div>
+</div>
+{% endfor %}
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends "base_app.html" %}
+{% block title %}Leave a Review &mdash; SkillSwap{% endblock %}
+{% block page_title %}Leave a review{% endblock %}
+{% block content %}
+<div class="form-card">
+  <h2>Review your session</h2>
+  <p class="text-muted small">With {{ reviewee.name }} &middot; {{ session.topic }}</p>
+  <form method="POST">
+    <div class="field">
+      <label>Rating</label>
+      <div class="star-picker">
+        <input type="radio" id="star5" name="rating" value="5" checked><label for="star5" title="Excellent">&#9733;</label>
+        <input type="radio" id="star4" name="rating" value="4"><label for="star4" title="Good">&#9733;</label>
+        <input type="radio" id="star3" name="rating" value="3"><label for="star3" title="Okay">&#9733;</label>
+        <input type="radio" id="star2" name="rating" value="2"><label for="star2" title="Poor">&#9733;</label>
+        <input type="radio" id="star1" name="rating" value="1"><label for="star1" title="Very poor">&#9733;</label>
+      </div>
+    </div>
+    <div class="field">
+      <label for="comment">Comment</label>
+      <textarea id="comment" name="comment" rows="3" placeholder="How did the session go?"></textarea>
+    </div>
+    <button class="btn btn-primary btn-block" type="submit">Submit review</button>
+  </form>
+</div>
+{% endblock %}

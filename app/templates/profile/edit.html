@@ -1,0 +1,80 @@
+{% extends "base_app.html" %}
+{% block title %}My Profile &mdash; SkillSwap{% endblock %}
+{% block page_title %}My profile{% endblock %}
+{% block content %}
+<form method="POST" enctype="multipart/form-data">
+  <div class="field">
+    <label for="bio">Bio</label>
+    <textarea id="bio" name="bio" rows="3">{{ current_user.bio }}</textarea>
+  </div>
+
+  <div class="field">
+    <label for="profile_pic">Profile picture</label>
+    <div class="flex gap-2">
+      {% if current_user.profile_pic_url %}
+        <img src="{{ current_user.profile_pic_url }}" class="avatar" alt="">
+      {% else %}
+        <div class="avatar">{{ current_user.name[0] | upper }}</div>
+      {% endif %}
+      <input type="file" id="profile_pic" name="profile_pic" accept="image/*">
+    </div>
+  </div>
+
+  <hr class="hr">
+
+  <div class="grid" style="grid-template-columns: 1fr 1fr;">
+    <div>
+      <h3>Skills I can teach</h3>
+      <p class="small text-muted">Check what you can teach, and rate your own level honestly &mdash; it factors into how you're matched.</p>
+      <div class="skill-picker-list">
+        {% for skill in all_skills %}
+        <div class="skill-picker-row">
+          <input type="checkbox" id="teach_{{ skill.id }}" name="teach_skill_ids" value="{{ skill.id }}"
+            {% if skill.id in my_teach_ids %}checked{% endif %}>
+          <label for="teach_{{ skill.id }}">{{ skill.name }}</label>
+          <select name="proficiency_{{ skill.id }}">
+            {% for level in ['beginner', 'intermediate', 'expert'] %}
+            <option value="{{ level }}" {% if proficiency_map.get(skill.id) == level %}selected{% endif %}>{{ level | capitalize }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div>
+      <h3>Skills I want to learn</h3>
+      <p class="small text-muted">Check anything you're hoping to pick up from someone else.</p>
+      <div class="skill-picker-list">
+        {% for skill in all_skills %}
+        <div class="skill-picker-row">
+          <input type="checkbox" id="learn_{{ skill.id }}" name="learn_skill_ids" value="{{ skill.id }}"
+            {% if skill.id in my_learn_ids %}checked{% endif %}>
+          <label for="learn_{{ skill.id }}">{{ skill.name }}</label>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <hr class="hr">
+
+  <h3>Don't see a skill?</h3>
+  <div class="grid" style="grid-template-columns: 1fr 1fr;">
+    <div class="field">
+      <label for="new_skill_name">Add a new one</label>
+      <input type="text" id="new_skill_name" name="new_skill_name" placeholder="e.g. Watercolor Painting">
+    </div>
+    <div class="field">
+      <label for="new_skill_role">Add it as</label>
+      <select id="new_skill_role" name="new_skill_role">
+        <option value="">Choose one&hellip;</option>
+        <option value="teach">Something I teach</option>
+        <option value="learn">Something I want to learn</option>
+      </select>
+    </div>
+  </div>
+
+  <button class="btn btn-primary" type="submit">Save profile</button>
+</form>
+{% endblock %}
