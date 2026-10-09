@@ -1,4 +1,4 @@
-```python
+
 import os
 import resend
 from flask import current_app
@@ -27,4 +27,3 @@ def send_email(to, subject, html):
             "Email failed; continuing without notification."
         )
         return None
-```
