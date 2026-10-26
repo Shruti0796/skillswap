@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SkillSwap · Interactive README</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@600&family=DM+Sans:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#FAF8F3;--card:#fff;--ink:#241F1A;--soft:#6B6253;--line:#E4DFD3;--green:#2F4C3B;--gd:#22382B;--tint:#EAF0EA;--gold:#B08D4F;--sand:#F3F0E6;--on:#fff;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--paper:#171512;--card:#211E19;--ink:#F2EEE4;--soft:#B4AB98;--line:#3A352C;--green:#6FA284;--gd:#8CBBA0;--tint:#22302A;--gold:#C9A669;--sand:#1E1B16;--on:#10201A}}
+:root[data-theme="dark"]{--paper:#171512;--card:#211E19;--ink:#F2EEE4;--soft:#B4AB98;--line:#3A352C;--green:#6FA284;--gd:#8CBBA0;--tint:#22302A;--gold:#C9A669;--sand:#1E1B16;--on:#10201A}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:72px}
+body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.6 "DM Sans",system-ui,sans-serif}
+h1,h2,h3{margin:0 0 .5em;line-height:1.15}h2{font-size:1.9rem;font-weight:800}
+.serif{font-family:"Source Serif 4",Georgia,serif;font-weight:600}
+.wrap{max-width:1040px;margin:0 auto;padding:0 clamp(18px,4vw,32px)}
+section{padding:clamp(40px,7vw,72px) 0}.alt{background:var(--sand);border-block:1px solid var(--line)}
+p{margin:0 0 1em;color:var(--soft);max-width:62ch}
+#bar{position:fixed;top:0;left:0;height:3px;width:0;background:var(--gold);z-index:30}
+header{position:sticky;top:0;z-index:20;background:var(--card);border-bottom:1px solid var(--line)}
+header .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-block:10px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:9px;font-weight:800}.brand svg{width:22px;height:22px;color:var(--gold)}
+nav{display:flex;gap:4px;flex-wrap:wrap}
+button{font:inherit;cursor:pointer;color:inherit}
+.nb{background:none;border:0;padding:6px 10px;border-radius:5px;font-weight:700;font-size:.88rem;color:var(--soft)}
+.nb:hover,.nb.on{background:var(--tint);color:var(--gd)}
+.btn{background:var(--green);color:var(--on);border:1.5px solid var(--green);padding:11px 20px;border-radius:6px;font-weight:700;transition:transform .15s,box-shadow .15s}
+.btn.o{background:var(--card);color:var(--ink);border-color:var(--line)}
+.btn:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(60,50,30,.18)}
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:clamp(20px,4vw,48px);align-items:center}
+h1{font-size:clamp(1.9rem,4.4vw,3rem)}.cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:18px}
+.panel{position:relative;height:210px;background:var(--card);border:1px solid var(--line);border-radius:10px;box-shadow:0 8px 30px rgba(60,50,30,.1);overflow:hidden}
+.pair{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:14px;opacity:0;animation:cyc 9.6s infinite;padding:0 10px}
+.pair:nth-child(2){animation-delay:2.4s}.pair:nth-child(3){animation-delay:4.8s}.pair:nth-child(4){animation-delay:7.2s}
+.chip{background:var(--sand);padding:9px 14px;border-radius:6px;font-weight:700;white-space:nowrap}
+.pair svg{width:24px;color:var(--gold);animation:spin 4.8s linear infinite}
+@keyframes cyc{0%{opacity:0;transform:translateY(8px)}4%,21%{opacity:1;transform:none}25%,100%{opacity:0;transform:translateY(-8px)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+.grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
+.card{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:18px;text-align:left;width:100%;transition:transform .15s,box-shadow .15s}
+.card:hover{transform:translateY(-3px);box-shadow:0 8px 22px rgba(60,50,30,.12)}
+.card b{display:flex;justify-content:space-between;align-items:center;font-size:1.02rem}
+.card i{font-style:normal;color:var(--gold);transition:transform .2s}.card[aria-expanded=true] i{transform:rotate(45deg)}
+.card span{display:none;margin-top:8px;color:var(--soft);font-size:.92rem}.card[aria-expanded=true] span{display:block}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.tab{background:var(--card);border:1.5px solid var(--line);padding:8px 16px;border-radius:6px;font-weight:700}
+.tab.on{background:var(--green);color:var(--on);border-color:var(--green)}
+.det{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:22px;display:grid;gap:18px;grid-template-columns:1.2fr 1fr}
+.det h3{font-size:1.3rem}.tag{display:inline-block;background:var(--tint);color:var(--gd);font-weight:700;font-size:.8rem;padding:3px 9px;border-radius:5px}
+code,pre{font-family:Consolas,monospace;font-size:.85rem}
+pre{background:var(--sand);border:1px solid var(--line);border-radius:6px;padding:12px 14px;margin:0 0 10px;overflow-x:auto;position:relative;color:var(--ink)}
+.cp{position:absolute;top:6px;right:6px;background:var(--card);border:1px solid var(--line);border-radius:4px;font-size:.72rem;font-weight:700;padding:2px 8px}
+.sw{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(140px,1fr))}
+.sw button{border:1px solid var(--line);border-radius:8px;background:var(--card);padding:0;overflow:hidden;text-align:left;transition:transform .15s}
+.sw button:hover{transform:translateY(-4px) rotate(-1deg)}
+.sw u{display:block;height:74px;text-decoration:none}.sw span{display:block;padding:8px 12px;font-size:.8rem;color:var(--soft)}.sw b{display:block;color:var(--ink)}
+.lab{display:grid;grid-template-columns:130px 1fr 44px;gap:10px;align-items:center;margin-bottom:8px;font-weight:700;font-size:.9rem}
+input[type=range]{accent-color:var(--green);width:100%}
+.score{font-size:3rem;font-weight:800;color:var(--gd)}.meter{height:10px;background:var(--line);border-radius:5px;overflow:hidden}
+.meter i{display:block;height:100%;width:0;background:var(--gold);transition:width .3s}
+#fab{position:fixed;right:max(18px,env(safe-area-inset-right));bottom:max(18px,env(safe-area-inset-bottom));width:52px;height:52px;border-radius:50%;border:0;background:var(--green);color:var(--on);box-shadow:0 8px 22px rgba(0,0,0,.28);z-index:25;display:grid;place-items:center;transition:transform .2s}
+#fab:hover{transform:scale(1.08)}#fab svg{width:24px;animation:bob 1.6s ease-in-out infinite;transition:rotate .3s}#fab.up svg{rotate:180deg}
+@keyframes bob{50%{translate:0 5px}}
+.rv{opacity:0;transform:translateY(18px);transition:opacity .6s,transform .6s}.rv.in{opacity:1;transform:none}
+#toast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,20px);background:var(--ink);color:var(--paper);padding:9px 16px;border-radius:6px;font-weight:700;font-size:.88rem;opacity:0;transition:.25s;z-index:40;pointer-events:none}#toast.s{opacity:1;transform:translate(-50%,0)}
+footer{padding:28px 0 90px;color:var(--soft);font-size:.88rem}
+@media(max-width:760px){.hero,.det{grid-template-columns:1fr}.lab{grid-template-columns:100px 1fr 40px}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto}.pair{opacity:0}.pair:first-child{opacity:1}.rv{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<div id="bar"></div>
+<header><div class="wrap">
+  <div class="brand"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>SkillSwap</div>
+  <nav id="nav"></nav>
+</div></header>
+
+<section id="top"><div class="wrap hero">
+  <div>
+    <h1 class="serif">Teach what you know.<br>Learn what you don’t.</h1>
+    <p>A peer-to-peer skill exchange and mentorship platform. Flask on Render, with Neon, Supabase Storage, Resend and Jitsi Meet behind it.</p>
+    <div class="cta"><button class="btn" data-go="stack">Explore the stack</button><button class="btn o" data-go="start">Quick start</button></div>
+  </div>
+  <div class="panel" aria-hidden="true" id="panel"></div>
+</div></section>
+
+<section id="features" class="alt"><div class="wrap">
+  <h2 class="rv">Features</h2><p class="rv">Tap a card to see the details.</p>
+  <div class="grid rv" id="feat"></div>
+</div></section>
+
+<section id="stack"><div class="wrap">
+  <h2 class="rv">Cloud stack</h2><p class="rv">Five independent managed services, all on free tiers.</p>
+  <div class="tabs rv" id="tabs"></div><div class="det rv" id="det"></div>
+</div></section>
+
+<section id="palette" class="alt"><div class="wrap">
+  <h2 class="rv">Colour scheme</h2><p class="rv">The Editorial Ink palette used in the app. Click a swatch to copy its hex.</p>
+  <div class="sw rv" id="sw"></div>
+</div></section>
+
+<section id="start"><div class="wrap">
+  <h2 class="rv">Quick start</h2><p class="rv">Runs locally with no cloud accounts: SQLite, local files, console emails.</p>
+  <div class="rv" id="code"></div>
+</div></section>
+
+<section id="match" class="alt"><div class="wrap">
+  <h2 class="rv">Matching playground</h2><p class="rv">score = 0.5 × direct + 0.3 × reciprocal + 0.2 × reputation. Move the sliders.</p>
+  <div class="rv">
+    <div class="lab">Direct<input type="range" id="d" min="0" max="100" value="85"><span></span></div>
+    <div class="lab">Reciprocal<input type="range" id="r" min="0" max="100" value="100"><span></span></div>
+    <div class="lab">Reputation<input type="range" id="p" min="0" max="100" value="100"><span></span></div>
+    <div class="score" id="sc">92%</div><div class="meter"><i id="mt"></i></div>
+  </div>
+</div></section>
+
+<footer><div class="wrap">SkillSwap · Cloud Computing Mini Project · Flask · Render · Neon · Supabase · Resend · Jitsi</div></footer>
+
+<button id="fab" aria-label="Scroll to next section"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg></button>
+<div id="toast"></div>
+
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const swap='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>';
+const toast=m=>{const t=$('#toast');t.textContent=m;t.classList.add('s');clearTimeout(t.h);t.h=setTimeout(()=>t.classList.remove('s'),1600)};
+const copy=async v=>{try{await navigator.clipboard.writeText(v)}catch(e){const a=document.createElement('textarea');a.value=v;document.body.append(a);a.select();try{document.execCommand('copy')}catch(_){}a.remove()}toast('Copied '+(v.length>24?'to clipboard':v))};
+
+/* nav + hero panel */
+const secs=['features','stack','palette','start','match'],names=['Features','Stack','Palette','Quick start','Matching'];
+$('#nav').innerHTML=secs.map((s,i)=>`<button class="nb" data-go="${s}">${names[i]}</button>`).join('');
+$('#panel').innerHTML=[['Python','Spanish'],['Guitar','Excel'],['Photography','French'],['UI/UX Design','Public Speaking']].map(p=>`<div class="pair"><span class="chip">${p[0]}</span>${swap}<span class="chip">${p[1]}</span></div>`).join('');
+document.addEventListener('click',e=>{const g=e.target.closest('[data-go]');if(g)document.getElementById(g.dataset.go).scrollIntoView({behavior:'smooth'})});
+
+/* features */
+const F=[['Smart matching','Every user gets a 0–100% score from skill overlap, reciprocity and ratings, so partial matches appear too.'],['Video sessions','An auto-generated Jitsi room, a pasted Zoom or Google Meet link, or in person. No double booking within 60 minutes.'],['Permanent notes','Upload PDFs or docs, or attach a recording link. Both people keep them on the session card.'],['Reviews','1–5 stars after a completed session, once per person. Ratings feed the match score.'],['Notifications','An in-app bell that polls every 10 seconds, plus an email when a session is scheduled.'],['Responsive UI','Sidebar app on desktop, compact top bar on tablet, single column on phones.']];
+$('#feat').innerHTML=F.map(f=>`<button class="card" aria-expanded="false"><b>${f[0]}<i>+</i></b><span>${f[1]}</span></button>`).join('');
+$$('.card').forEach(c=>c.onclick=()=>c.setAttribute('aria-expanded',c.getAttribute('aria-expanded')!=='true'));
+
+/* stack tabs */
+const S={Render:['Hosts the app','Builds from Git and runs the Flask app under Gunicorn. Holds all environment variables.','pip install -r requirements.txt\ngunicorn run:app','Free web service, sleeps when idle'],
+Neon:['PostgreSQL database','Serverless Postgres for users, skills, requests, sessions, reviews and notifications.','DATABASE_URL=postgresql://…/neondb?sslmode=require','About 0.5 GB, auto-suspends'],
+Supabase:['File storage','A public bucket for profile pictures and session notes, uploaded over the storage REST API.','SUPABASE_URL\nSUPABASE_SERVICE_ROLE_KEY\nSUPABASE_BUCKET','About 1 GB of files'],
+Resend:['Email API','Sends the session notification email. Needs a verified domain to reach other users.','RESEND_API_KEY\nRESEND_FROM_EMAIL','100 per day, 3,000 per month'],
+Jitsi:['Video rooms','Each session gets a unique meet.jit.si room, with no account or API key.','JITSI_DOMAIN=meet.jit.si  # optional','Free public service']};
+$('#tabs').innerHTML=Object.keys(S).map(k=>`<button class="tab" data-k="${k}">${k}</button>`).join('');
+const show=k=>{$$('.tab').forEach(t=>t.classList.toggle('on',t.dataset.k===k));const s=S[k];$('#det').innerHTML=`<div><h3>${k}: ${s[0]}</h3><p>${s[1]}</p><span class="tag">${s[3]}</span></div><pre>${s[2]}</pre>`};
+$$('.tab').forEach(t=>t.onclick=()=>show(t.dataset.k));show('Render');
+
+/* palette */
+const P=[['Paper','#FAF8F3'],['Ink','#241F1A'],['Forest green','#2F4C3B'],['Gold','#B08D4F'],['Green tint','#EAF0EA'],['Sand','#F3F0E6']];
+$('#sw').innerHTML=P.map(p=>`<button data-c="${p[1]}"><u style="background:${p[1]}"></u><span><b>${p[0]}</b>${p[1]}</span></button>`).join('');
+$$('#sw button').forEach(b=>b.onclick=()=>copy(b.dataset.c));
+
+/* quick start */
+const C=['python -m venv venv\nsource venv/bin/activate   # Windows: venv\\Scripts\\activate\npip install -r requirements.txt','python seed.py     # tables, starter skills, demo users\npython run.py      # http://localhost:5000','# Demo logins\nalice@example.com / bob@example.com  (password: password123)'];
+$('#code').innerHTML=C.map(c=>`<pre><button class="cp">Copy</button>${c.replace(/</g,'&lt;')}</pre>`).join('');
+$$('.cp').forEach(b=>b.onclick=()=>copy(b.parentElement.innerText.replace(/^Copy\s*/,'')));
+
+/* matching */
+const calc=()=>{const [d,r,p]=['d','r','p'].map(i=>+$('#'+i).value);['d','r','p'].forEach(i=>$('#'+i).nextElementSibling.textContent=(+$('#'+i).value/100).toFixed(2));const s=Math.round(.5*d+.3*r+.2*p);$('#sc').textContent=s+'%';$('#mt').style.width=s+'%'};
+$$('input[type=range]').forEach(i=>i.oninput=calc);calc();
+
+/* reveal, progress, floating arrow */
+const io=new IntersectionObserver(es=>es.forEach(e=>e.isIntersecting&&e.target.classList.add('in')),{threshold:.12});$$('.rv').forEach(e=>io.observe(e));
+const all=['top',...secs],fab=$('#fab');
+const nextIdx=()=>all.findIndex(id=>document.getElementById(id).getBoundingClientRect().top>80);
+addEventListener('scroll',()=>{const h=document.documentElement,m=h.scrollHeight-innerHeight;$('#bar').style.width=(scrollY/m*100)+'%';fab.classList.toggle('up',nextIdx()<0);
+ const cur=[...secs].reverse().find(id=>document.getElementById(id).getBoundingClientRect().top<140);$$('.nb').forEach(b=>b.classList.toggle('on',b.dataset.go===cur))},{passive:true});
+fab.onclick=()=>{const i=nextIdx();(i<0?document.getElementById('top'):document.getElementById(all[i])).scrollIntoView({behavior:'smooth'})};
+</script>
+</body>
+</html>
