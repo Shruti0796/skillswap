@@ -1,120 +1,112 @@
-# SkillSwap – Peer-to-Peer Skill Exchange & Mentorship Platform
+# SkillSwap
 
-A Flask app with:
+**Teach what you know. Learn what you don’t.**
+A peer-to-peer skill exchange and mentorship platform built with Flask and deployed on free-tier cloud services.
 
-- User registration/login with password confirmation and a show/hide toggle on every password field
-- Profiles with skills you can teach (with proficiency level) and skills you want to learn
-- **Smarter matching engine** — scores every other user (not just perfect mutual matches) based on direct relevance, reciprocity, and reputation
-- Connection requests (send/accept/reject)
-- **Session scheduling with real video hosting** — every session auto-generates a free Jitsi Meet video room (no account needed), or you can paste your own Zoom / Google Meet link, or mark it in-person
-- **Session notes & recordings that stay forever** — upload a PDF/doc of notes or paste a recording link, attached permanently to the session for both people to revisit any time
-- Ratings & reviews (only allowed after a session is marked completed)
-- In-app notification bell that polls every 10s
-- A proper **app shell UI** — fixed sidebar navigation, not a marketing page — built as a from-scratch design system (no Bootstrap, no template kit)
+## Features
 
-Runs locally on SQLite with zero setup, and is wired for **Neon Postgres** + **AWS** in production via environment variables only — no code changes.
+- **Smart matching:** every user gets a 0–100% score from skill overlap, reciprocity and ratings, so partial matches show up too.
+- **Profiles:** skills to teach (beginner / intermediate / expert), skills to learn, bio and photo.
+- **Connections:** send, accept or decline requests.
+- **Sessions:** auto-generated Jitsi video room, or a pasted Zoom / Google Meet link, or in person. Mentors can’t be double booked within 60 minutes.
+- **Permanent notes:** upload PDFs/docs or attach recording links to a session; both people keep them.
+- **Reviews:** 1–5 stars, only after a session is completed, once per person.
+- **Notifications:** in-app bell (polls every 10 s) plus email on new sessions.
+- **Responsive UI:** desktop, tablet and phone.
 
----
+## Tech stack
 
-## 1. Run it locally
+| Area | Technology |
+|---|---|
+| Backend | Python 3, Flask 3, Flask-SQLAlchemy, Flask-Login, Gunicorn |
+| Frontend | Jinja2, HTML5, CSS3, vanilla JavaScript (no framework) |
+| Hosting | Render |
+| Database | Neon (PostgreSQL); SQLite locally |
+| File storage | Supabase Storage |
+| Email | Resend |
+| Video | Jitsi Meet |
+
+## Architecture
+
+```
+Browser ──HTTPS──▶ Render (Gunicorn + Flask)
+                     ├──▶ Neon             PostgreSQL (SQLAlchemy / TLS)
+                     ├──▶ Supabase Storage profile pictures, session notes
+                     ├──▶ Resend           notification emails
+                     └──▶ Jitsi Meet       generates a room link per session
+```
+
+## Quick start (local)
+
+No cloud accounts needed: it falls back to SQLite, local file storage and console-printed emails.
 
 ```bash
-cd skillswap
-python3 -m venv venv
+python -m venv venv
 source venv/bin/activate        # Windows: venv\Scripts\activate
 pip install -r requirements.txt
-cp .env.example .env
-python seed.py                  # starter skills + 2 demo users
-python run.py
+cp .env.example .env            # optional
+python seed.py                  # creates tables, starter skills, demo users
+python run.py                   # http://localhost:5000
 ```
 
-Open **http://localhost:5000**. Demo logins: `alice@example.com` / `bob@example.com`, password `password123`.
+Demo logins: `alice@example.com` / `bob@example.com`, password `password123`.
 
-> If you're upgrading from an earlier version of this project, delete the old `skillswap.db` and re-run `python seed.py` — the database schema changed (new session/materials columns).
+## Configuration
 
-### Try the video + notes flow
-1. Log in as Alice, accept/send a request with Bob, then **Schedule session**.
-2. Leave "How will you meet?" on the default option — this generates a real, joinable Jitsi Meet link automatically.
-3. On the Sessions page, click **Join session** to open it.
-4. Open the **Notes & recording** panel on that session card, upload a PDF, or paste a link to a recording. It's saved permanently — log in as Bob and you'll see it too.
+Set these as environment variables (or in `.env` locally).
 
----
+| Variable | Purpose |
+|---|---|
+| `SECRET_KEY` | Signs login sessions |
+| `DATABASE_URL` | Neon connection string, must include `sslmode=require` |
+| `SUPABASE_URL` | `https://<project>.supabase.co` |
+| `SUPABASE_SERVICE_ROLE_KEY` | Server-side storage key. Never expose it. |
+| `SUPABASE_BUCKET` | Public bucket name |
+| `RESEND_API_KEY` | Resend API key |
+| `RESEND_FROM_EMAIL` | Sender on a verified domain |
+| `JITSI_DOMAIN` | Optional, defaults to `meet.jit.si` |
 
-## 2. Password handling
+## Deploy
 
-- Registration requires the password twice (`password` + `confirm_password`) and rejects the submission server-side if they don't match, or if the password is under 8 characters.
-- Every password field has a show/hide eye icon (`app/static/js/password-toggle.js`) so people can check what they typed before submitting — this is a client-side convenience only; the actual password is still sent over HTTPS and stored as a salted hash (`werkzeug.security.generate_password_hash`), never in plain text.
+1. Push the repo to GitHub.
+2. **Neon:** create a project and copy the connection string.
+3. **Supabase:** create a project, add a **public** Storage bucket, copy the URL and service-role key.
+4. **Resend:** create an API key.
+5. **Render:** new Web Service from the repo. Build: `pip install -r requirements.txt`. Start: `gunicorn run:app`.
+6. Add the environment variables above in Render.
+7. Run `python seed.py` once with `DATABASE_URL` pointing at Neon to create the tables.
 
----
-
-## 3. Video hosting: how it works without any API keys
-
-Sessions use **Jitsi Meet** (`meet.jit.si`) by default — a public, free video service where a room exists the instant someone opens its URL. `app/utils/meetings.py` just builds a URL like `https://meet.jit.si/skillswap-<random-id>`; there's no signup, API key, or webhook to configure. People can also paste their own Zoom or Google Meet link instead, or mark a session as in-person.
-
-If you outgrow the public Jitsi service (e.g. you want branding or higher participant limits), you can self-host Jitsi on its own AWS EC2 instance and just change `JITSI_DOMAIN` in your environment — no other code changes needed.
-
----
-
-## 4. Project structure
+## Matching engine
 
 ```
-skillswap/
-  run.py / seed.py / requirements.txt / .env.example
-  app/
-    config.py            # env-driven config (DB, S3, SES, Jitsi, matching weights)
-    models.py             # SQLAlchemy models, incl. Session + SessionMaterial
-    matching.py            # the scoring/matching engine
-    routes/                 # one blueprint per feature area
-    utils/
-      storage.py             # profile pics + session materials, S3 or local
-      email_utils.py          # SES or console fallback
-      meetings.py              # Jitsi link generator
-    templates/
-      base_public.html         # logged-out shell (landing, login, register)
-      base_app.html              # logged-in app shell (sidebar navigation)
-      ...
-    static/
-      css/style.css              # the whole design system, no framework
-      js/notifications.js         # notification bell polling
-      js/password-toggle.js        # show/hide password
+score = 0.5 × direct + 0.3 × reciprocal + 0.2 × reputation
 ```
 
----
+- **direct:** how much of what you want to learn they can teach, weighted by their level (beginner 0.4, intermediate 0.7, expert 1.0).
+- **reciprocal:** how much of what you teach they want to learn.
+- **reputation:** average rating ÷ 5 (0.6 for users with no reviews yet).
 
-## 5. Moving to production: Neon + AWS
+## Project structure
 
-### Database — Neon (serverless Postgres)
-1. Create a free project at neon.tech, and copy its connection string.
-2. Add `psycopg2-binary` is already in `requirements.txt`.
-3. Set in your environment:
-   ```
-   DATABASE_URL=postgresql://<user>:<password>@<your-project>.neon.tech/skillswap?sslmode=require
-   ```
-   Neon **requires** `sslmode=require` — don't drop it from the URL.
-4. Neon auto-suspends idle databases and wakes on the next query; `SQLALCHEMY_ENGINE_OPTIONS = {"pool_pre_ping": True}` (already set in `config.py`) prevents stale-connection errors when that happens.
-5. Create the tables once against Neon: `flask --app run.py init-db` (or `python seed.py` to also add starter data).
-
-### Hosting — AWS Elastic Beanstalk
-```bash
-pip install awsebcli
-eb init -p python-3.11 skillswap
-eb create skillswap-env
-eb setenv SECRET_KEY=... DATABASE_URL=... S3_BUCKET=... AWS_REGION=... SES_SENDER_EMAIL=...
-eb deploy
 ```
-Attach an IAM role to the EB environment with least-privilege access to your S3 bucket — don't use hardcoded access keys in production.
+run.py  seed.py  requirements.txt  .env.example
+app/
+  config.py  models.py  matching.py
+  routes/   auth, profile, matches, connections, sessions, reviews, notifications
+  utils/    storage.py, email_utils.py, meetings.py
+  templates/  base_public.html, base_app.html, ...
+  static/     css/style.css, js/
+```
 
-### File storage — S3 (profile pictures + session notes/PDFs)
-Set `S3_BUCKET` and `AWS_REGION`; uploads switch from local disk to S3 automatically — no code changes.
+## Known limitations
 
-### Email — SES
-Set `SES_SENDER_EMAIL` once verified in SES; console-logging emails switch to real sends automatically.
+- Resend only emails the account owner until a domain is verified; in-app notifications reach everyone.
+- Public Jitsi rooms may show “waiting for moderator”. Use a Zoom/Meet link or self-host Jitsi.
+- No CSRF tokens, email verification or password reset yet.
+- Render’s free plan sleeps when idle, so the first request can be slow.
 
-### Video — Jitsi (see section 3 above)
-The public `meet.jit.si` works out of the box. Self-hosting is optional and only worth it at scale.
+## Roadmap
 
----
-
-## 6. Notes on the design
+WebSocket notifications and chat, calendar invites, admin panel, signed URLs for private files, automated tests.
 
 The old version used Bootstrap and a marketing-page layout. This version is a real app shell: a persistent sidebar (Dashboard / Matches / Requests / Sessions / Notifications / Profile), a single typeface (Manrope) at multiple weights, and a muted slate-blue accent instead of bright colors — built entirely in `app/static/css/style.css` with no CSS framework, so every visual choice is easy to trace and change.
